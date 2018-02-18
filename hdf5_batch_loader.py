@@ -23,6 +23,7 @@ import argparse
 from configparser import ConfigParser
 import h5py
 import numpy as np
+from tqdm import trange
 
 
 #### Read from the configuration file config.ini ####
@@ -33,12 +34,16 @@ parser = argparse.ArgumentParser(description="Load batches of images and masks f
 
 parser.add_argument("--input_filename", default=config.get("local", "HDF5_FILENAME"), help="Name of the hdf5 to load for data")
 parser.add_argument("--batchsize", type=int, default=config.get("local", "BATCH_SIZE"), help="batch size for data loader")
+parser.add_argument("--epochs", type=int, default=config.get("local", "NUM_EPOCHS"), help="number of epochs to train")
 parser.add_argument("--print_random_image", action="store_true", default=False,
 					help="unit test: print random image and mask")
+parser.add_argument("--print_batch_indices", action="store_true", default=False,
+					help="unit test: print the indices for each batch")
 args = parser.parse_args()
 
 HDF5_FILENAME = args.input_filename
 BATCH_SIZE = args.batchsize
+NUM_EPOCHS = args.epochs
 
 def img_flip(img, msk):
 	'''
@@ -87,10 +92,21 @@ def augment_data(imgs, msks):
 
 	return imgs, msks
 
-def get_random_batch(hdf5_file, maxIdx, batch_size=16):
+def get_batch(hdf5_file, idx, batch_size=16):
 
 	img_shape = tuple([batch_size] + list(hdf5_file['input'].attrs['lshape']))
 	msk_shape = tuple([batch_size] + list(hdf5_file['output'].attrs['lshape']))
+
+	imgs = hdf5_file["input"][idx,:]
+	imgs = imgs.reshape(img_shape)
+
+	msks = hdf5_file["output"][idx,:]
+	msks = msks.reshape(msk_shape)
+
+	return imgs, msks
+
+
+def get_random_batch(hdf5_file, maxIdx, batch_size=16):
 
 	# Randomly shuffle indices. Take first batch_size. Sort.
 	# This will give us a completely random set of indices for each batch
@@ -98,13 +114,7 @@ def get_random_batch(hdf5_file, maxIdx, batch_size=16):
 	np.random.shuffle(indicies) # Shuffle the indicies
 	random_idx = np.sort(indicies[0:batch_size])
 
-	imgs = hdf5_file["input"][random_idx,:]
-	imgs = imgs.reshape(img_shape)
-
-	msks = hdf5_file["output"][random_idx,:]
-	msks = msks.reshape(msk_shape)
-
-	return imgs, msks
+	return get_batch(hdf5_file, random_idx, batch_size)
 
 
 import matplotlib.pyplot as plt
@@ -136,13 +146,16 @@ def main() :
 		print("Number of masks: {}".format(numMsks))
 		print("Image size = {} pixels".format(tuple(HDF5["input"].attrs["lshape"])))
 		print("Mask size = {} pixels".format(tuple(HDF5["output"].attrs["lshape"])))
-
-		imgs_original, msks = get_random_batch(HDF5, numImgs, BATCH_SIZE)
-
-		# Create random rotations and flips on image and masks
-		imgs, msks = augment_data(imgs_original.copy(), msks)
+		print("Batch size = {}".format(BATCH_SIZE))
+		print("Number of epochs = {}\n\n".format(NUM_EPOCHS))
 
 		if args.print_random_image:
+
+			imgs_original, msks = get_random_batch(HDF5, numImgs, BATCH_SIZE)
+
+			# Create random rotations and flips on image and masks
+			imgs, msks = augment_data(imgs_original.copy(), msks)
+
 			for i in range(3):
 				idx = np.random.randint(BATCH_SIZE)
 				plot_imgs_and_masks(np.squeeze(imgs_original[idx,:,:,:]),
@@ -152,6 +165,34 @@ def main() :
 			print("Plotting 3 random images and masks.")
 			plt.show()
 
+		else:  # Go through for some epochs
+
+			indicies = np.arange(0,numImgs)
+
+			tProgressBar = trange(NUM_EPOCHS, desc='Epoch', leave=True)
+			for epoch in range(NUM_EPOCHS):
+
+				if args.print_batch_indices:
+					print("********** EPOCH {} **************".format(epoch+1))
+
+				np.random.shuffle(indicies) # Shuffle the indicies
+
+				for batchIdx in range(0, numImgs, BATCH_SIZE):
+
+					idx = np.sort(indicies[batchIdx:(batchIdx+BATCH_SIZE)])
+
+					if args.print_batch_indices:
+						print(idx)
+					else:
+						tProgressBar.set_description("Epoch {} (batch {})".format(epoch+1,
+												 	idx))
+
+					imgs_original, msks = get_batch(HDF5, idx, idx.shape[0])
+
+					# Create random rotations and flips on image and masks
+					imgs, msks = augment_data(imgs_original.copy(), msks)
+
+					# Use the batch in to train the model
 
 
 if __name__ == "__main__":
