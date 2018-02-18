@@ -42,6 +42,17 @@ import os
 from tqdm import trange
 from configparser import ConfigParser
 
+import glob
+import pandas as pd
+import numpy as np
+import h5py
+
+import fnmatch  # Filter file names
+import re  # Import regular expressions to extract slice #
+
+from parsing import parse_contour_file, parse_dicom_file, poly_to_mask
+
+
 #### Read from the configuration file config.ini ####
 config = ConfigParser()
 config.read("config.ini")
@@ -77,12 +88,6 @@ args = parser.parse_args()
 DATA_DIR_BASE = args.data_directory
 HDF5_FILENAME = args.output_filename
 
-from parsing import parse_contour_file, parse_dicom_file, poly_to_mask
-import glob
-import pandas as pd
-import numpy as np
-import h5py
-
 def getFiles(dfLink, idx):
 	'''
 	Get the list of DICOM files and contour files associated with this patient idx
@@ -95,9 +100,6 @@ def getFiles(dfLink, idx):
 
 	return dicomFiles, contourFiles
 
-import fnmatch  # Filter file names
-import re  # Import regular expressions to extract slice #
-import os
 
 def get_matching_slice(contourFilename, dicomFiles):
 	'''
