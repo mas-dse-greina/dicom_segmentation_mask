@@ -30,6 +30,7 @@ optional arguments:
 
 Note the original image has been randomly flipped and rotated.
 
+
 ```usage: process_dicom_to_hdf5.py [-h] [--print_random_image]
                                 [--data_directory DATA_DIRECTORY]
                                 [--output_filename OUTPUT_FILENAME]
