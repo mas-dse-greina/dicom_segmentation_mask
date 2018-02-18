@@ -123,6 +123,7 @@ def plot_imgs_and_masks(img_original, img, img_mask):
 	plt.imshow(img_mask, alpha=0.3);
 
 	plt.title("With inner diameter mask (yellow)\nRandom rotation/flip");
+	plt.savefig("test_figure.png", dpi=300)
 
 
 def main() :
