@@ -34,7 +34,8 @@ Note the original image has been randomly flipped and rotated.
 
 ```
 usage: hdf5_batch_loader.py [-h] [--input_filename INPUT_FILENAME]
-                            [--batchsize BATCHSIZE] [--print_random_image]
+                            [--batchsize BATCHSIZE] [--epochs EPOCHS]
+                            [--print_random_image] [--print_batch_indices]
 
 Load batches of images and masks from the HDF5 datafile
 
@@ -44,7 +45,10 @@ optional arguments:
                         Name of the hdf5 to load for data
   --batchsize BATCHSIZE
                         batch size for data loader
+  --epochs EPOCHS       number of epochs to train
   --print_random_image  unit test: print random image and mask
+  --print_batch_indices
+                        unit test: print the indices for each batch
 
 ```
 
@@ -74,9 +78,13 @@ I added a data augmentator which randomly rotated and flipped the tensors. It mi
 
 There's a simple unit test that can be accessed from the command line switch (--print_random_image). This prints out 3 random images from the batch. One of these images is saved to disk. I could create a function that randomly saved images to disk to keep track of the algorithm.
 
+For the random batch iteration, I've added a unit test with the command line switch (--print_batch_indices) which will print out the indices per batch for each epoch of training.
+
 ### Given the pipeline you have built, can you see any deficiencies that you would change if you had more time? If not, can you think of any improvements/enhancements to the pipeline that you could build in?
 
 I'd like to use SimpleITK to normalize the pixels/voxels to a uniform size. I'd also like to add the Hough transform to test for the presence of just a single elliptical mask in case the mask polygon points are corrupted.
+
+To use in Keras' fit_generator I just need to call the batch loader through an iterator. So an infinite loop that just keeps yielding a batch.
 
 
 
