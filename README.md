@@ -80,6 +80,40 @@ There's a simple unit test that can be accessed from the command line switch (--
 
 For the random batch iteration, I've added a unit test with the command line switch (--print_batch_indices) which will print out the indices per batch for each epoch of training.
 
+```
+$ python hdf5_batch_loader.py --print_batch_indices
+Number of images: 96
+Number of masks: 96
+Image size = (256, 256, 1) pixels
+Mask size = (256, 256, 1) pixels
+Batch size = 16
+Number of epochs = 3
+
+
+Epoch:   0%|                                                                          | 0/3 [00:00<?, ?it/s]********** EPOCH 1 **************
+[ 8 10 23 24 26 31 34 45 48 51 58 61 69 70 78 80]
+[ 1  3 15 19 25 33 38 56 64 68 71 76 81 82 88 90]
+[ 6 20 21 27 36 37 40 41 44 46 49 53 66 74 77 94]
+[ 5  7 13 16 17 29 32 35 43 52 54 65 79 87 89 93]
+[ 0  4 12 22 42 55 57 59 60 62 63 67 75 83 84 95]
+[ 2  9 11 14 18 28 30 39 47 50 72 73 85 86 91 92]
+********** EPOCH 2 **************
+[ 4  8 16 17 22 25 44 47 54 56 68 76 77 84 86 90]
+[ 2 13 20 23 33 40 41 46 58 62 63 64 78 80 81 88]
+[ 3  5 14 19 28 29 30 32 37 45 48 53 71 73 79 92]
+[ 7  9 11 15 27 34 50 52 57 59 61 70 74 82 83 89]
+[ 0 12 21 26 35 36 38 39 42 51 65 67 75 85 87 94]
+[ 1  6 10 18 24 31 43 49 55 60 66 69 72 91 93 95]
+********** EPOCH 3 **************
+[16 20 28 29 42 43 44 57 59 63 66 67 69 71 92 94]
+[ 0  7 12 18 19 22 24 27 35 45 48 49 76 80 85 93]
+[ 1  2 11 13 21 23 37 46 52 53 54 56 62 70 73 87]
+[ 4  6  8 17 34 36 55 58 61 74 78 81 84 86 89 91]
+[ 5  9 10 14 15 25 26 30 31 32 33 40 41 65 79 82]
+[ 3 38 39 47 50 51 60 64 68 72 75 77 83 88 90 95]
+
+```
+
 ### Given the pipeline you have built, can you see any deficiencies that you would change if you had more time? If not, can you think of any improvements/enhancements to the pipeline that you could build in?
 
 I'd like to use SimpleITK to normalize the pixels/voxels to a uniform size. I'd also like to add the Hough transform to test for the presence of just a single elliptical mask in case the mask polygon points are corrupted.
