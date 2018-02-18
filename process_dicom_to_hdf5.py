@@ -16,8 +16,17 @@
 Processes a directory of DICOM files and creates
 both the 2D slices with their associated image masks.
 
-Usage:
- `python process_dicom_to_hdf5.py --data_directory=../data/final_data/ --`
+usage: process_dicom_to_hdf5.py [-h] [--print_random_image]
+                                [--data_directory DATA_DIRECTORY]
+                                [--output_filename OUTPUT_FILENAME]
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --print_random_image  unit test: print random image and mask
+  --data_directory DATA_DIRECTORY
+                        base directory for data
+  --output_filename OUTPUT_FILENAME
+                        Name of the hdf5 to create for data
 
 Unit test:
 1. To print a random DICOM image and its associated mask:
@@ -56,7 +65,7 @@ class readable_dir(argparse.Action):
 
 parser = argparse.ArgumentParser(description="Process the DICOM files and masks")
 parser.add_argument("--print_random_image", action="store_true", default=False,
-					help="unit test: print image")
+					help="unit test: print random image and mask")
 
 parser.add_argument("--data_directory", action=readable_dir,
 					default=config.get("local", "DATA_DIR_BASE"),
