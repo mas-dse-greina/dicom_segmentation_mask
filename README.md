@@ -7,7 +7,7 @@ Files:
 
 2. *python process_dicom_to_hdf5.py* - This is the standalone code for processing the DICOM and masks into an HDF5 file. The HDF5 method is preferable for deep learning frameworks because it can hold the data in a single, extensible file format that can be accessed out of system memory. The HDF5 can be arbitrarily large and the datasets within the file can be randomly sliced as if they were numpy arrays. 
 
-```
+```process_dicom_to_hdf5.py
 usage: process_dicom_to_hdf5.py [-h] [--print_random_image]
                                 [--data_directory DATA_DIRECTORY]
                                 [--output_filename OUTPUT_FILENAME]
@@ -32,20 +32,19 @@ optional arguments:
 Note the original image has been randomly flipped and rotated.
 
 
-```
-usage: process_dicom_to_hdf5.py [-h] [--print_random_image]
-                                [--data_directory DATA_DIRECTORY]
-                                [--output_filename OUTPUT_FILENAME]
+```hdf5_batch_loader.py
+usage: hdf5_batch_loader.py [-h] [--input_filename INPUT_FILENAME]
+                            [--batchsize BATCHSIZE] [--print_random_image]
 
-Process the DICOM files and masks
+Load batches of images and masks from the HDF5 datafile
 
 optional arguments:
   -h, --help            show this help message and exit
+  --input_filename INPUT_FILENAME
+                        Name of the hdf5 to load for data
+  --batchsize BATCHSIZE
+                        batch size for data loader
   --print_random_image  unit test: print random image and mask
-  --data_directory DATA_DIRECTORY
-                        base directory for data
-  --output_filename OUTPUT_FILENAME
-                        Name of the hdf5 to create for data
 
 ```
 
